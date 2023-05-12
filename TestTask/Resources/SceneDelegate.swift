@@ -18,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let gridVC = GridViewController()
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = gridVC
+        window?.rootViewController = UINavigationController(rootViewController: gridVC)
         window?.makeKeyAndVisible()
         window?.backgroundColor = .clear
     }

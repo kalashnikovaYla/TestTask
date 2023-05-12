@@ -48,6 +48,8 @@ final class GridViewController: UIViewController {
                 self?.collectionView.reloadData()
             }
         }
+        
+        view.backgroundColor = UIColor.systemBackground
 
         settingsCollectionView()
     }
@@ -66,6 +68,7 @@ final class GridViewController: UIViewController {
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor)
         ])
+        collectionView.backgroundColor = UIColor.systemBackground
     }
 }
 
@@ -85,10 +88,16 @@ extension GridViewController: UICollectionViewDelegate, UICollectionViewDataSour
             return UICollectionViewCell()
         }
         if let url = data?[indexPath.row] {
-            cell.photoImageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
-            cell.photoImageView.sd_setImage(with: url, placeholderImage: nil, options: [.progressiveLoad])
+            cell.photoImageView.sd_imageIndicator = SDWebImageActivityIndicator.white
+            cell.photoImageView.sd_setImage(with: url)
         }
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let url = data?[indexPath.row] else {return}
+        let detailVC = DetailViewController(url: url)
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }

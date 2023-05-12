@@ -42,7 +42,11 @@ final class GridViewController: UIViewController {
         super.viewDidLoad()
 
         networkManager.loadDataFromTextFile(string: "https://it-link.ru/test/images.txt") { [weak self] array in
-            self?.data = array
+            
+            DispatchQueue.main.async {
+                self?.data = array
+                self?.collectionView.reloadData()
+            }
         }
 
         settingsCollectionView()
@@ -63,7 +67,6 @@ final class GridViewController: UIViewController {
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor)
         ])
     }
-    
 }
 
 
@@ -77,20 +80,14 @@ extension GridViewController: UICollectionViewDelegate, UICollectionViewDataSour
     
    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identifier, for: indexPath) as? CollectionViewCell else {
             return UICollectionViewCell()
         }
         if let url = data?[indexPath.row] {
-            cell.photoImageView.sd_setImage(with: url)
+            cell.photoImageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
+            cell.photoImageView.sd_setImage(with: url, placeholderImage: nil, options: [.progressiveLoad])
         }
-        
-        /*
-         networkManager.loadImage(url: data?[indexPath.row]) { image in
-             DispatchQueue.main.async {
-                 cell.photoImageView.image = image
-             }
-         }
-         */
         
         return cell
     }

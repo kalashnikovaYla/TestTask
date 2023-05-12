@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  DetailViewController.swift
 //  TestTask
 //
 //  Created by sss on 12.05.2023.
@@ -7,13 +7,16 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+final class DetailViewController: UIViewController {
 
+        
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-    }
 
+       
+    }
+    
+
+  
 
 }
-

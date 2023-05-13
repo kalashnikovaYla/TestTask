@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -13,7 +14,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        // Settings cache
+        let cache = SDImageCache.shared
+        cache.config.maxDiskSize = 500 * 1024 * 1024
+        cache.config.diskCacheExpireType = .accessDate
         return true
     }
 

@@ -36,17 +36,19 @@ final class DetailViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
     //MARK: - Life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         settingsSubViews()
+        addGesture()
         
         photoImageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
         photoImageView.sd_setImage(with: url)
         
-        view.backgroundColor = UIColor.systemBackground
+        view.backgroundColor = UIColor(named: "background")
         
     }
     
@@ -64,6 +66,10 @@ final class DetailViewController: UIViewController {
             photoImageView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor),
             photoImageView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor)
         ])
+        
+    }
+    
+    private func addGesture() {
         
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_ :)))
         pinchGesture.delegate = self

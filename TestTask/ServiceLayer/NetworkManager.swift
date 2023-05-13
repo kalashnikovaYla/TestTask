@@ -6,8 +6,11 @@
 //
 
 import UIKit
+import SDWebImage
 
 final class NetworkManager {
+    
+    var imageCache = SDImageCache(namespace: "thumbnails")
     
     /// Load data from text file
     func loadDataFromTextFile(string: String, completion: @escaping ([URL]?) -> Void) {
@@ -40,24 +43,6 @@ final class NetworkManager {
         }
     }
     
-    ///Load image
-    func loadImage(url: URL?, completion: @escaping (UIImage?) -> Void) {
-        guard let url = url else {
-            completion(nil)
-            return
-        }
-        
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
-                print(error.localizedDescription)
-                completion(nil)
-                return
-            }
-            if let data = data, let image = UIImage(data: data) {
-                completion(image)
-            }
-        }.resume()
-    }
 
     ///URL validation
     private func isValidURL(string: String) -> Bool {
@@ -73,5 +58,32 @@ final class NetworkManager {
             return true
         }
         return false
+    }
+    
+    func loadImage(with url: URL, completion: @escaping (UIImage?) -> Void) {
+        
+        if let cachedImage = imageCache.imageFromCache(forKey: url.absoluteString) {
+            completion(cachedImage)
+        } else {
+            let originalImageUrl = url
+            
+            SDWebImageManager.shared.loadImage(with: originalImageUrl,
+                                               options: .highPriority,
+                                               progress: nil,
+                                               completed: { [weak self] image, _, _, _, _, _ in
+                           
+                guard let self = self, let image = image else {
+                    completion(nil)
+                    return
+                }
+                
+                let targetSize = CGSize(width: 100, height: 100)
+                let resizedImage = image.sd_resizedImage(with: targetSize, scaleMode: .aspectFill)
+               
+                self.imageCache.store(resizedImage, forKey: url.absoluteString, completion: nil)
+        
+                completion(resizedImage)
+                })
+        }
     }
 }

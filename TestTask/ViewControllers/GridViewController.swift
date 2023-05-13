@@ -6,15 +6,15 @@
 //
 
 import UIKit
-import SDWebImage
 
 
 final class GridViewController: UIViewController {
 
-    //MARK: - Properies
+    //MARK: - Properties
     
     var data: [URL]?
     var networkManager = NetworkManager()
+    
     
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -26,7 +26,6 @@ final class GridViewController: UIViewController {
         layout.minimumInteritemSpacing = 4
         layout.sectionInset = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        //collectionView.backgroundColor = UIColor(named: "background")
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(CollectionViewCell.self,
@@ -41,15 +40,16 @@ final class GridViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        networkManager.loadDataFromTextFile(string: "https://it-link.ru/test/images.txt") { [weak self] array in
-            
+        let url = "https://it-link.ru/test/images.txt"
+        
+        networkManager.loadDataFromTextFile(string: url) { [weak self] array in
             DispatchQueue.main.async {
                 self?.data = array
                 self?.collectionView.reloadData()
             }
         }
         
-        view.backgroundColor = UIColor.systemBackground
+        view.backgroundColor = UIColor(named: "background")
 
         settingsCollectionView()
     }
@@ -68,8 +68,9 @@ final class GridViewController: UIViewController {
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor)
         ])
-        collectionView.backgroundColor = UIColor.systemBackground
+        collectionView.backgroundColor = UIColor(named: "background")
     }
+
 }
 
 
@@ -88,8 +89,12 @@ extension GridViewController: UICollectionViewDelegate, UICollectionViewDataSour
             return UICollectionViewCell()
         }
         if let url = data?[indexPath.row] {
-            cell.photoImageView.sd_imageIndicator = SDWebImageActivityIndicator.white
-            cell.photoImageView.sd_setImage(with: url)
+            
+            networkManager.loadImage(with: url) { image in
+                DispatchQueue.main.async {
+                    cell.photoImageView.image = image
+                }
+            }
         }
         
         return cell

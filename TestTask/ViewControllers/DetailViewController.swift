@@ -10,15 +10,22 @@ import SDWebImage
 
 final class DetailViewController: UIViewController {
 
+    //MARK: - Properties
+    
     var url: URL
     
     var photoImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.clipsToBounds = true
         return imageView
     }()
+    
+    var isHiddenNavBar = false
+    
+    
+    //MARK: - Init
     
     init(url: URL) {
         self.url = url
@@ -34,24 +41,60 @@ final class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        settingsImageView()
-        
-        view.backgroundColor = UIColor.systemBackground
-    }
-    
-    private func settingsImageView() {
-        view.addSubview(photoImageView)
-        
-        NSLayoutConstraint.activate([
-            photoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            photoImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            photoImageView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            photoImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor)
-        ])
+        settingsSubViews()
         
         photoImageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
         photoImageView.sd_setImage(with: url)
+        
+        view.backgroundColor = UIColor.systemBackground
+        
     }
-
+    
    
+    
+    //MARK: - Method
+    
+    private func settingsSubViews() {
+        
+        view.addSubview(photoImageView)
+        
+        NSLayoutConstraint.activate([
+            photoImageView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
+            photoImageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            photoImageView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor),
+            photoImageView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor)
+        ])
+        
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_ :)))
+        pinchGesture.delegate = self
+        view.addGestureRecognizer(pinchGesture)
+        pinchGesture.delaysTouchesBegan = false
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hiddenNavBar))
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func handlePinch(_ gesture: UIPinchGestureRecognizer) {
+        guard let view = gesture.view else {return}
+        
+        if gesture.state == .began || gesture.state == .changed {
+            view.transform = view.transform.scaledBy(x: gesture.scale, y: gesture.scale)
+            gesture.scale = 1.0
+        }
+    }
+    
+    @objc private func hiddenNavBar() {
+        isHiddenNavBar = !isHiddenNavBar
+        navigationController?.navigationBar.isHidden = isHiddenNavBar
+    }
+}
+
+
+//MARK: - UIGestureRecognizerDelegate
+
+extension DetailViewController: UIGestureRecognizerDelegate {
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
 }

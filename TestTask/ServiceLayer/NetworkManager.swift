@@ -15,34 +15,40 @@ final class NetworkManager {
     /// Load data from text file
     func loadDataFromTextFile(string: String, completion: @escaping ([URL]?) -> Void) {
         
-        if let url = URL(string: "https://it-link.ru/test/images.txt") {
-            let task = URLSession.shared.dataTask(with: url) { [weak self] (data, _ , error) in
+        if let url = URL(string: string) {
+            
+            URLSession.shared.dataTask(with: url) { [weak self] (data, _ , error) in
                 guard let self = self else {return }
                 
-                if let error = error {
-                    print(error)
+                if error != nil {
                     completion(nil)
                     return
                 }
                 
                 if let data = data {
-                    var urlsArray: [URL] = []
-                    
-                    if let contents = String(data: data, encoding: .utf8) {
-                        let urls = contents.components(separatedBy: .newlines)
-                        for url in urls {
-                            if self.isValidURL(string: url), self.isValidURLForLoadImage(string: url), let i = URL(string: url) {
-                                urlsArray.append(i)
-                            }
-                        }
-                    }
+                    let urlsArray = createUrlsArray(data: data)
                     completion(urlsArray)
                 }
-            }
-            task.resume()
+            }.resume()
         }
     }
     
+    private func createUrlsArray(data: Data) -> [URL] {
+        var urlsArray: [URL] = []
+        
+        if let contents = String(data: data, encoding: .utf8) {
+            let urls = contents.components(separatedBy: .newlines)
+            for urlString in urls {
+                
+                if self.isValidURL(string: urlString),
+                    self.isValidURLForLoadImage(string: urlString),
+                    let url = URL(string: urlString) {
+                    urlsArray.append(url)
+                }
+            }
+        }
+        return urlsArray
+    }
 
     ///URL validation
     private func isValidURL(string: String) -> Bool {
@@ -60,6 +66,7 @@ final class NetworkManager {
         return false
     }
     
+    ///Load image
     func loadImage(with url: URL, completion: @escaping (UIImage?) -> Void) {
         
         if let cachedImage = imageCache.imageFromCache(forKey: url.absoluteString) {
@@ -71,7 +78,7 @@ final class NetworkManager {
                                                options: .highPriority,
                                                progress: nil,
                                                completed: { [weak self] image, _, _, _, _, _ in
-                           
+                
                 guard let self = self, let image = image else {
                     completion(nil)
                     return
@@ -79,11 +86,10 @@ final class NetworkManager {
                 
                 let targetSize = CGSize(width: 100, height: 100)
                 let resizedImage = image.sd_resizedImage(with: targetSize, scaleMode: .aspectFill)
-               
                 self.imageCache.store(resizedImage, forKey: url.absoluteString, completion: nil)
-        
+                
                 completion(resizedImage)
-                })
+            })
         }
     }
 }

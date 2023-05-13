@@ -48,7 +48,7 @@ final class DetailViewController: UIViewController {
         photoImageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
         photoImageView.sd_setImage(with: url)
         
-        view.backgroundColor = UIColor(named: "background")
+        view.backgroundColor = UIColor.systemBackground
         
     }
     

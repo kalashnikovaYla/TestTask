@@ -49,7 +49,7 @@ final class GridViewController: UIViewController {
             }
         }
         
-        view.backgroundColor = UIColor(named: "background")
+        view.backgroundColor = UIColor.systemBackground
 
         settingsCollectionView()
     }
@@ -68,7 +68,7 @@ final class GridViewController: UIViewController {
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor)
         ])
-        collectionView.backgroundColor = UIColor(named: "background")
+        collectionView.backgroundColor = UIColor.systemBackground
     }
 
 }
@@ -88,8 +88,8 @@ extension GridViewController: UICollectionViewDelegate, UICollectionViewDataSour
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identifier, for: indexPath) as? CollectionViewCell else {
             return UICollectionViewCell()
         }
+        
         if let url = data?[indexPath.row] {
-            
             networkManager.loadImage(with: url) { image in
                 DispatchQueue.main.async {
                     cell.photoImageView.image = image

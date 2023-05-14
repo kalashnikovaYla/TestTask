@@ -66,15 +66,14 @@ final class NetworkManager {
         return false
     }
     
-    ///Load image
+    ///Load preview
     func loadImage(with url: URL, completion: @escaping (UIImage?) -> Void) {
         
         if let cachedImage = imageCache.imageFromCache(forKey: url.absoluteString) {
             completion(cachedImage)
         } else {
-            let originalImageUrl = url
             
-            SDWebImageManager.shared.loadImage(with: originalImageUrl,
+            SDWebImageManager.shared.loadImage(with: url,
                                                options: .highPriority,
                                                progress: nil,
                                                completed: { [weak self] image, _, _, _, _, _ in

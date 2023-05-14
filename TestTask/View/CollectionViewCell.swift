@@ -21,6 +21,13 @@ final class CollectionViewCell: UICollectionViewCell {
         return imageView
     }()
     
+    let activityIndicatorView: UIActivityIndicatorView = {
+        let activity = UIActivityIndicatorView(style: .medium)
+        activity.translatesAutoresizingMaskIntoConstraints = false
+        activity.tintColor = .label
+        return activity
+    }()
+    
     
     //MARK: - Init
     
@@ -28,11 +35,16 @@ final class CollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         
         contentView.addSubview(photoImageView)
+        contentView.addSubview(activityIndicatorView)
+        
         NSLayoutConstraint.activate([
             photoImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             photoImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             photoImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            photoImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            photoImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            
+            activityIndicatorView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            activityIndicatorView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
     

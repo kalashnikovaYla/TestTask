@@ -88,15 +88,16 @@ extension GridViewController: UICollectionViewDelegate, UICollectionViewDataSour
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identifier, for: indexPath) as? CollectionViewCell else {
             return UICollectionViewCell()
         }
-        
+        cell.activityIndicatorView.startAnimating()
         if let url = data?[indexPath.row] {
             networkManager.loadImage(with: url) { image in
                 DispatchQueue.main.async {
                     cell.photoImageView.image = image
+                    cell.activityIndicatorView.stopAnimating()
+                    cell.activityIndicatorView.isHidden = true 
                 }
             }
         }
-        
         return cell
     }
     
